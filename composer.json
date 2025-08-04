@@ -1,0 +1,40 @@
+{
+  "name": "wsydney76/craft-elementmap5",
+  "description": "Display incoming and outgoing relationships for elements in Craft CP",
+  "type": "craft-plugin",
+  "require": {
+    "php": ">=8.2",
+    "craftcms/cms": "^5.0.0"
+  },
+  "require-dev": {
+    "craftcms/ecs": "dev-main",
+    "craftcms/phpstan": "dev-main"
+  },
+  "autoload": {
+    "psr-4": {
+      "wsydney76\\elementmap\\": "src/"
+    }
+  },
+  "extra": {
+    "handle": "_elementmap",
+    "name": "Element Map 5",
+    "developer": "wsydney76",
+    "documentationUrl": "",
+    "class": "wsydney76\\elementmap\\ElementmapPlugin"
+  },
+  "scripts": {
+    "check-cs": "ecs check --ansi",
+    "fix-cs": "ecs check --ansi --fix",
+    "phpstan": "phpstan --memory-limit=1G"
+  },
+  "config": {
+    "sort-packages": true,
+    "platform": {
+      "php": "8.2"
+    },
+    "allow-plugins": {
+      "yiisoft/yii2-composer": true,
+      "craftcms/plugin-installer": true
+    }
+  }
+}

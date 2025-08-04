@@ -1,0 +1,51 @@
+{# @var plugin \wsydney76\elementmap\ElementmapPlugin #}
+{# @var settings \wsydney76\elementmap\models\Settings #}
+
+{% import '_includes/forms.twig' as forms %}
+
+{{ forms.lightswitchField({
+    label: 'Look for relationships on which site?'|t('_elementmap'),
+    name: 'showAllSites',
+    on: settings.showAllSites,
+    onLabel: 'On all sites'|t('_elementmap'),
+    offLabel: 'On active site only'|t('_elementmap'),
+    warning: config.showAllSites is defined ? _self.configWarning('showAllSites'),
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Show image thumbnails?'|t('_elementmap'),
+    name: 'showThumbnails',
+    on: settings.showThumbnails,
+    onLabel: 'Show small thumbnails for link to image assets'|t('_elementmap'),
+    offLabel: 'Show icon'|t('_elementmap'),
+    tip: 'This slows down performance significantly, so disable it if a lot of images are related to an element.'|t('_elementmap'),
+    warning: config.showThumbnails is defined ? _self.configWarning('showThumbnails'),
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Where the link for a found relationship to a nested element should point to'|t('_elementmap'),
+    name: 'linkToNestedElement',
+    on: settings.linkToNestedElement,
+    onLabel: 'Link to nested element'|t('_elementmap'),
+    offLabel: 'Link to top level element'|t('_elementmap'),
+    warning: config.linkToNestedElement is defined ? _self.configWarning('linkToNestedElement')
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Show root owners?'|t('_elementmap'),
+    name: 'showRootOwner',
+    on: settings.showRootOwner,
+    onLabel: 'Show root owners for nested elements'|t('_elementmap'),
+    offLabel: 'Show nested element only'|t('_elementmap'),
+    tip: 'Showing root owners improves user experience significantly, but adds a lot of overhead.'|t('_elementmap'),
+    warning: config.showRootOwner is defined ? _self.configWarning('showRootOwner'),
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Show revisions?'|t('_elementmap'),
+    name: 'showRevisions',
+    on: settings.showRevisions,
+    onLabel: 'Also show revisions'|t('_elementmap'),
+    offLabel: 'Show canonical elements and drafts'|t('_elementmap'),
+    warning: config.showRevisions is defined ? _self.configWarning('showRevisions'),
+}) }}
