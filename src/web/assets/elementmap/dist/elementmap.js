@@ -1,8 +1,8 @@
-var $btn = $('#map-btn');
+var $btn = $('#elementmap-button');
 
 $btn.on('click', function() {
 
-    url = elementMapAjaxBaseUrl.replace('%s', elementMapElementId);
+    url = elementmapAjaxBaseUrl.replace('%s', elementmapElementId);
 
     $.get(url)
         .done(function(data) {
@@ -19,7 +19,7 @@ $btn.on('click', function() {
 
 setTimeout(() => {
     Craft.cp.$primaryForm.data('elementEditor').on('createProvisionalDraft', function() {
-        elementMapElementId = Craft.cp.$primaryForm.data('elementEditor').settings.elementId;
+        elementmapElementId = Craft.cp.$primaryForm.data('elementEditor').settings.elementId;
     });
 }, 500)
 

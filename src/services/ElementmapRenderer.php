@@ -30,7 +30,7 @@ use craft\elements\User;
 use Exception;
 use putyourlightson\campaign\elements\CampaignElement;
 use wsydney76\elementmap\ElementmapPlugin;
-use wsydney76\elementmap\events\ElementMapDataEvent;
+use wsydney76\elementmap\events\ElementmapDataEvent;
 use wsydney76\elementmap\models\Settings;
 use yii\base\Component;
 use function version_compare;
@@ -330,10 +330,8 @@ class ElementmapRenderer extends Component
      */
     private function getElementMapData(array $elements, int $siteId)
     {
-
         $elements = $this->groupByType($elements);
         $results = [];
-
         while (count($elements)) {
             // Retrieve the next element type.
             reset($elements);
@@ -344,7 +342,7 @@ class ElementmapRenderer extends Component
                 $results = array_merge($results, call_user_func([$this, self::ELEMENT_TYPE_MAP[$type]], $elements[$type], $siteId));
             } else {
                 if ($this->hasEventHandlers(static::EVENT_ELEMENT_MAP_DATA)) {
-                    $event = new ElementMapDataEvent([
+                    $event = new ElementmapDataEvent([
                         'type' => $type,
                         'elements' => $elements[$type],
                         'siteId' => $siteId,

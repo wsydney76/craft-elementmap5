@@ -1,0 +1,8 @@
+{%- do view.registerAssetBundle("wsydney76\\elementmap\\web\\assets\\elementmap\\ElementMapAsset") -%}
+
+<a class="btn" id="elementmap-button">{{ 'Relationships'|t('_elementmap') }}</a>
+
+{% js at POS_END %}
+    elementmapAjaxBaseUrl = '{{ cpUrl("elementmap-getrelations/#{element.site.id}/%s") }}';
+    elementmapElementId = {{ element.id }};
+{% endjs %}

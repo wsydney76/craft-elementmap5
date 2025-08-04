@@ -1,11 +1,12 @@
+{# var map array from ElementmapController  #}
+
 {% from _self import showElement %}
 
-
-<div class="map">
+<div class="elementmap">
     <label>{{ 'References to this element'|t('_elementmap') }}</label>
 
     {% if element.canonicalId != element.id %}
-        <div style="margin-top: 6px; font-size: 13px">
+        <div class="elementmap-info">
             {{ 'Showing relations to canonical element'|t('_elementmap') }}
         </div>
     {% endif %}
@@ -19,7 +20,8 @@
         {% endif %}
     </ul>
 </div>
-<div class="map">
+
+<div class="elementmap">
     <label>{{ 'References from this element'|t('_elementmap') }}</label>
     <ul>
         {% for element in map.outgoing %}
@@ -33,9 +35,7 @@
 
 {% macro showElement(element) %}
     <li>
-        <div style="display: flex; align-items: center">
-
-            {# TODO: Move to ElementmapRenderer ? #}
+        <div class="elementmap-item">
             {% if element.image is defined %}
                 <div>
                     {% if element.kind == 'image' %}

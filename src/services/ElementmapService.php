@@ -23,9 +23,9 @@ use wsydney76\elementmap\ElementmapPlugin;
 use yii\base\Exception;
 use function count;
 
-class Elementmap
+class ElementmapService
 {
-    public function initElementMap(): void
+    public function initElementmap(): void
     {
 
         // Set routes
@@ -36,41 +36,36 @@ class Elementmap
         });
 
         // Render element maps within the appropriate template hooks.
-//        Craft::$app->getView()->hook('cp.entries.edit.meta', [$this, 'renderEntryElementMap']);
-//        Craft::$app->getView()->hook('cp.assets.edit.meta', [$this, 'renderAssetElementMap']);
-//        Craft::$app->getView()->hook('cp.categories.edit.details', [$this, 'renderCategoryElementMap']);
-//          Craft::$app->getView()->hook('cp.users.edit.meta', [$this, 'renderUserElementMap']);
-//        Craft::$app->getView()->hook('cp.globals.edit.content', [$this, 'renderGlobalsElementMap']);
         Craft::$app->getView()->hook('cp.commerce.product.edit.details', [$this, 'renderProductElementMap']);
 
         // Dont' show button in slideout editors
-        if (!Craft::$app->request->isConsoleRequest && !Craft::$app->request->isAjax) {
+        // if (!Craft::$app->request->isConsoleRequest && !Craft::$app->request->isAjax) {
             Event::on(
                 Entry::class,
                 Entry::EVENT_DEFINE_SIDEBAR_HTML,
                 function(DefineHtmlEvent $event) {
-                    $event->html .= $this->renderMap($event->sender, 'entry');;
+                    $event->html .= $this->renderSidebarButton($event->sender, 'entry');;
                 }
             );
             Event::on(
                 Category::class,
                 Category::EVENT_DEFINE_SIDEBAR_HTML,
                 function(DefineHtmlEvent $event) {
-                    $event->html .= $this->renderMap($event->sender, 'category');;
+                    $event->html .= $this->renderSidebarButton($event->sender, 'category');;
                 }
             );
             Event::on(
                 Asset::class,
                 Asset::EVENT_DEFINE_SIDEBAR_HTML,
                 function(DefineHtmlEvent $event) {
-                    $event->html .= $this->renderMap($event->sender, 'asset');;
+                    $event->html .= $this->renderSidebarButton($event->sender, 'asset');;
                 }
             );
             Event::on(
                 User::class,
                 User::EVENT_DEFINE_SIDEBAR_HTML,
                 function(DefineHtmlEvent $event) {
-                    $event->html .= $this->renderMap($event->sender, 'asset');;
+                    $event->html .= $this->renderSidebarButton($event->sender, 'asset');;
                 }
             );
 
@@ -79,7 +74,7 @@ class Elementmap
                     CampaignElement::class,
                     CampaignElement::EVENT_DEFINE_SIDEBAR_HTML,
                     function(DefineHtmlEvent $event) {
-                        $event->html .= $this->renderMap($event->sender, 'campaign');;
+                        $event->html .= $this->renderSidebarButton($event->sender, 'campaign');;
                     }
                 );
             }
@@ -89,11 +84,11 @@ class Elementmap
                     Product::class,
                     Product::EVENT_DEFINE_SIDEBAR_HTML,
                     function(DefineHtmlEvent $event) {
-                        $event->html .= $this->renderMap($event->sender, 'product');;
+                        $event->html .= $this->renderSidebarButton($event->sender, 'product');;
                     }
                 );
             }
-        }
+        // }
 
         // Allow some elements to have map data shown in their overview tables.
         Event::on(Asset::class, Element::EVENT_REGISTER_TABLE_ATTRIBUTES, [$this, 'registerElementmapTableAttributes']);
@@ -114,10 +109,10 @@ class Elementmap
      */
     public function registerElementmapTableAttributes(RegisterElementTableAttributesEvent $event)
     {
-        $event->tableAttributes['elementMap_incomingReferenceCount'] = ['label' => Craft::t('_elementmap', 'References From (Count)')];
-        $event->tableAttributes['elementMap_outgoingReferenceCount'] = ['label' => Craft::t('_elementmap', 'References To (Count)')];
-        $event->tableAttributes['elementMap_incomingReferences'] = ['label' => Craft::t('_elementmap', 'References From')];
-        $event->tableAttributes['elementMap_outgoingReferences'] = ['label' => Craft::t('_elementmap', 'References To')];
+        $event->tableAttributes['elementmap_incomingReferenceCount'] = ['label' => Craft::t('_elementmap', 'References From (Count)')];
+        $event->tableAttributes['elementmap_outgoingReferenceCount'] = ['label' => Craft::t('_elementmap', 'References To (Count)')];
+        $event->tableAttributes['elementmap_incomingReferences'] = ['label' => Craft::t('_elementmap', 'References From')];
+        $event->tableAttributes['elementmap_outgoingReferences'] = ['label' => Craft::t('_elementmap', 'References To')];
     }
 
     /**
@@ -125,22 +120,22 @@ class Elementmap
      */
     public function getElementmapTableAttributeHtml(DefineAttributeHtmlEvent $event)
     {
-        if ($event->attribute === 'elementMap_incomingReferenceCount') {
+        if ($event->attribute === 'elementmap_incomingReferenceCount') {
             $event->handled = true;
             $entry = $event->sender;
             $elements = ElementmapPlugin::getInstance()->renderer->getIncomingElements($entry, $entry->site->id);
             $event->html = Craft::$app->view->renderTemplate('_elementmap/_elementmap_indexcolumn', ['elements' => count($elements)]);
-        } else if ($event->attribute === 'elementMap_outgoingReferenceCount') {
+        } else if ($event->attribute === 'elementmap_outgoingReferenceCount') {
             $event->handled = true;
             $entry = $event->sender;
             $elements = ElementmapPlugin::getInstance()->renderer->getOutgoingElements($entry, $entry->site->id);
             $event->html = Craft::$app->view->renderTemplate('_elementmap/_elementmap_indexcolumn', ['elements' => count($elements)]);
-        } else if ($event->attribute === 'elementMap_incomingReferences') {
+        } else if ($event->attribute === 'elementmap_incomingReferences') {
             $event->handled = true;
             $entry = $event->sender;
             $elements = ElementmapPlugin::getInstance()->renderer->getIncomingElements($entry, $entry->site->id);
             $event->html = Craft::$app->view->renderTemplate('_elementmap/_elementmap_indexcolumn', ['elements' => $elements]);
-        } else if ($event->attribute === 'elementMap_outgoingReferences') {
+        } else if ($event->attribute === 'elementmap_outgoingReferences') {
             $event->handled = true;
             $entry = $event->sender;
             $elements = ElementmapPlugin::getInstance()->renderer->getOutgoingElements($entry, $entry->site->id);
@@ -149,7 +144,7 @@ class Elementmap
     }
 
     /**
-     * Renders an underlying incoming/outgoing element map.
+     * Renders the sidebar button.
      *
      * @param $element
      * @param $class
@@ -159,9 +154,13 @@ class Elementmap
      * @throws SyntaxError
      * @throws Exception
      */
-    public function renderMap($element, $class)
+    public function renderSidebarButton($element, $class): string
     {
-        return Craft::$app->view->renderTemplate('_elementmap/_elementmap', ['element' => $element, 'class' => $class]);
+        return Craft::$app->view->renderTemplate(
+            '_elementmap/_elementmap_sidebarbutton', [
+                'element' => $element,
+                'class' => $class
+            ]);
     }
 
     /**
@@ -176,7 +175,7 @@ class Elementmap
      */
     public function renderAssetElementMap(array &$context)
     {
-        return $this->renderMap($context['element'], 'asset');
+        return $this->renderSidebarButton($context['element'], 'asset');
     }
 
     /**
@@ -234,6 +233,6 @@ class Elementmap
      */
     public function renderProductElementMap(array &$context)
     {
-        return $this->renderMap($context['product'], 'product');
+        return $this->renderSidebarButton($context['product'], 'product');
     }
 }
