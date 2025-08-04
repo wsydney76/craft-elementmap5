@@ -242,9 +242,7 @@ class ElementmapRenderer extends Component
             ],
         ];
 
-        // TODO: Check
-
-        if (!$this->settings->showAllSites) {
+        if ($this->settings->showSites == 'current') {
             if (!$getSources) {
                 $conditions[] = [
                     'or',
@@ -348,7 +346,7 @@ class ElementmapRenderer extends Component
         }
 
         usort($results, function($a, $b) {
-            return $this->settings->sortByElementType ?
+            return $this->settings->orderResults == 'elementType' ?
                 strcmp($a['sort'] . $a['title'], $b['sort'] . $b['title']) :
                 strcmp($a['title'], $b['title']);
         });
@@ -420,7 +418,7 @@ class ElementmapRenderer extends Component
 
         $results = [];
 
-        $linkToNestedElement = $this->settings->linkToNestedElement;
+        $linkToElement = $this->settings->linkToElement;
 
         /** @var Entry $element */
         foreach ($elements as $element) {
@@ -441,7 +439,7 @@ class ElementmapRenderer extends Component
                 'icon' => $icon,
                 'color' => $color,
                 'title' => $title,
-                'url' => $linkToNestedElement ? $element->cpEditUrl : $rootOwner->cpEditUrl,
+                'url' => $linkToElement == 'nested' ? $element->cpEditUrl : $rootOwner->cpEditUrl,
                 'sort' => self::ELEMENT_TYPE_SORT_MAP[get_class($element)],
                 'canView' => $element->canView($this->user)
             ];
@@ -647,7 +645,7 @@ class ElementmapRenderer extends Component
             $results[] = [
                 'id' => $element->id,
                 'kind' => $element->kind,
-                'image' => $element->kind === 'image' && $this->settings->showThumbnails ? $element->getUrl(['width' => 32, 'height' => 32]) : '',
+                'image' => $element->kind === 'image' && $this->settings->showThumbnails == 'true' ? $element->getUrl(['width' => 32, 'height' => 32]) : '',
                 'title' => $element->title . ' (' . $volumeName . ')',
                 'url' => $element->cpEditUrl,
                 'fileUrl' => $element->url,
@@ -770,7 +768,7 @@ class ElementmapRenderer extends Component
     {
         $query->id = $elementIds;
 
-        if ($this->settings->showAllSites) {
+        if ($this->settings->showSites == 'all') {
             $query->site('*');
             $query->unique();
             $query->preferSites([$siteId]);
@@ -781,7 +779,7 @@ class ElementmapRenderer extends Component
         $query->provisionalDrafts(null);
         $query->drafts(null);
         $query->status(null);
-        $query->revisions($this->settings->showRevisions ? null : false);
+        $query->revisions($this->settings->showRevisions == 'true' ? null : false);
         $query->orderBy('title');
         return $query->all();
     }
@@ -853,6 +851,6 @@ class ElementmapRenderer extends Component
 
     protected function getRootOwner(ElementInterface $element): ElementInterface
     {
-        return $this->settings->showRootOwner ? $element->getRootOwner() : $element;
+        return $this->settings->showRootOwner == 'true' ? $element->getRootOwner() : $element;
     }
 }

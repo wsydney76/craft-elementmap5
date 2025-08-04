@@ -10,11 +10,11 @@ use craft\base\Model;
  */
 class Settings extends Model
 {
-    public bool $showAllSites = true;
-    public bool $showRevisions = false;
-    public bool $showThumbnails = false;
-    public bool $linkToNestedElement = false;
-    public bool $showRootOwner = true;
-    public bool $sortByElementType = true;
+    public string $showSites = 'all';
+    public string $showThumbnails = 'false';
+    public string $showRevisions = 'false';
+    public string $linkToElement = 'false';
+    public string $showRootOwner = 'true';
+    public string $orderResults = 'elementType';
 
 }
