@@ -6,10 +6,14 @@ use Craft;
 use craft\base\Model;
 use craft\base\Plugin;
 use wsydney76\elementmap\models\Settings;
+use wsydney76\elementmap\services\Elementmap;
+use wsydney76\elementmap\services\ElementmapRenderer;
 
 /**
  * Element Map 5 plugin
  *
+ * @property-read Elementmap $elementmap
+ * @property-read ElementmapRenderer $elementmapRenderer
  * @method static ElementmapPlugin getInstance()
  * @method Settings getSettings()
  */
@@ -22,7 +26,8 @@ class ElementmapPlugin extends Plugin
     {
         return [
             'components' => [
-                // Define component configs here...
+                'elementmap' => Elementmap::class,
+                'renderer' => ElementmapRenderer::class,
             ],
         ];
     }
@@ -32,6 +37,10 @@ class ElementmapPlugin extends Plugin
         parent::init();
 
         $this->attachEventHandlers();
+
+        if (Craft::$app->request->isCpRequest) {
+            $this->elementmap->initElementMap();
+        }
 
         // Any code that creates an element query or loads Twig should be deferred until
         // after Craft is fully initialized, to avoid conflicts with other plugins/modules
@@ -58,4 +67,5 @@ class ElementmapPlugin extends Plugin
         // Register event handlers here ...
         // (see https://craftcms.com/docs/5.x/extend/events.html to get started)
     }
+
 }

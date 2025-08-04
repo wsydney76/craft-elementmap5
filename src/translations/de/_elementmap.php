@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'Also show revisions' => 'Auch Revisionen anzeigen',
+    'Link to nested element' => 'Zum verschachtelten Element verlinken',
+    'Link to top level element' => 'Zum obersten Element verlinken',
+    'Look for relationships on which site?' => 'Auf welcher Seite nach Beziehungen suchen?',
+    'None' => 'Keine',
+    'On active site only' => 'Nur auf aktiver Seite',
+    'On all sites' => 'Auf allen Seiten',
+    'References from this element' => 'Verknüpfungen von diesem Element',
+    'References to this element' => 'Verknüpfungen zu diesem Element',
+    'Relationships' => 'Verknüpfungen',
+    'Show canonical elements and drafts' => 'Kanonische Elemente und Entwürfe anzeigen',
+    'Show icon' => 'Symbol anzeigen',
+    'Show image thumbnails?' => 'Bildvorschauen anzeigen?',
+    'Show nested element only' => 'Nur verschachteltes Element anzeigen',
+    'Show revisions?' => 'Revisionen anzeigen?',
+    'Show root owners for nested elements' => 'Root owner für verschachtelte Elemente anzeigen',
+    'Show root owners?' => 'Root owner anzeigen?',
+    'Show small thumbnails for link to image assets' => 'Kleine Vorschaubilder für Bild-Assets anzeigen',
+    'Showing relations to canonical element' => 'Zeige Verknüpfungen zum kanonischen Element',
+    'Showing root owners improves user experience significantly, but adds a lot of overhead.' => 'Das Anzeigen von Root ownern verbessert die Benutzererfahrung erheblich, verursacht jedoch zusätzlichen Aufwand.',
+    'This slows down performance significantly, so disable it if a lot of images are related to an element.' => 'Dies verlangsamt die Leistung erheblich, daher deaktivieren, wenn viele Bilder mit einem Element verknüpft sind.',
+    'Where the link for a found relationship to a nested element should point to' => 'Wohin soll der Link für eine gefundene Beziehung zu einem verschachtelten Element führen?',
+];

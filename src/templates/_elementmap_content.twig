@@ -1,0 +1,71 @@
+{% from _self import showElement %}
+
+
+<div class="map">
+    <label>{{ 'References to this element'|t('_elementmap') }}</label>
+
+    {% if element.canonicalId != element.id %}
+        <div style="margin-top: 6px; font-size: 13px">
+            {{ 'Showing relations to canonical element'|t('_elementmap') }}
+        </div>
+    {% endif %}
+
+    <ul>
+        {% for element in map.incoming %}
+            {{ showElement(element) }}
+        {% endfor %}
+        {% if map.incoming | length == 0 %}
+            <li>{{ 'None'|t('_elementmap') }}</li>
+        {% endif %}
+    </ul>
+</div>
+<div class="map">
+    <label>{{ 'References from this element'|t('_elementmap') }}</label>
+    <ul>
+        {% for element in map.outgoing %}
+            {{ showElement(element) }}
+        {% endfor %}
+        {% if map.outgoing | length == 0 %}
+            <li>{{ 'None'|t('_elementmap') }}</li>
+        {% endif %}
+    </ul>
+</div>
+
+{% macro showElement(element) %}
+    <li>
+        <div style="display: flex; align-items: center">
+
+            {# TODO: Move to ElementmapRenderer ? #}
+            {% if element.image is defined %}
+                <div>
+                    {% if element.kind == 'image' %}
+                        {% if element.image %}
+                            <img class="thumbnail" src="{{ element.image }}" height="36" width="36">
+                        {% else %}
+                            {{ svg('@appicons/image.svg') }}
+                        {% endif %}
+                    {% elseif element.kind == 'video' %}
+                        {{ svg('@appicons/video.svg') }}
+                    {% else %}
+                        <a href="{{ element.fileUrl }}" target="_blank">
+                            {{ svg('@appicons/download.svg') }}
+                        </a>
+                    {% endif %}
+                </div>
+            {% else %}
+                {% if element.icon is defined %}
+                    {% set icon = svg(element.icon) %}
+
+                    <div class="icon icon-mask">{{ svg(element.icon)|attr({style: "fill: #{element.color ?? '#000000'};"}) }}</div>
+                {% endif %}
+            {% endif %}
+            {% if element.canView ?? true %}
+                <a href="{{ element.url }}" data-id="{{ element.id }}" data-editable>
+                    {{ element.title }}
+                </a>
+            {% else %}
+                {{ element.title }}
+            {% endif %}
+        </div>
+    </li>
+{% endmacro %}
