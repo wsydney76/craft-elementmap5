@@ -21,6 +21,7 @@ use craft\elements\ContentBlock;
 use craft\elements\db\AddressQuery;
 use craft\elements\db\AssetQuery;
 use craft\elements\db\CategoryQuery;
+use craft\elements\db\ContentBlockQuery;
 use craft\elements\db\EntryQuery;
 use craft\elements\db\GlobalSetQuery;
 use craft\elements\db\TagQuery;
@@ -40,6 +41,7 @@ class ElementmapRenderer extends Component
 // Constants
     const ELEMENT_TYPE_MAP = [
         'craft\elements\Entry' => 'getEntryElements',
+        'craft\elements\ContentBlock' => 'getContentBlockElements',
         'craft\elements\GlobalSet' => 'getGlobalSetElements',
         'craft\elements\Category' => 'getCategoryElements',
         // 'craft\elements\Tag' => 'getTagElements',
@@ -54,6 +56,7 @@ class ElementmapRenderer extends Component
 
     const ELEMENT_TYPE_SORT_MAP = [
         'craft\elements\Entry' => '01',
+        'craft\elements\ContentBlock' => '01',
         'craft\elements\GlobalSet' => '99',
         'craft\elements\Category' => '10',
         'craft\elements\Tag' => '15',
@@ -259,19 +262,6 @@ class ElementmapRenderer extends Component
 
         $elements = $query->all();
 
-        // Replace content blocks with their owning elements.
-        if (version_compare(Craft::$app->getVersion(), '5.8.0', '>=')) {
-            foreach ($elements as $i => $element) {
-                if ($element['type'] === 'craft\\elements\\ContentBlock') {
-                    // get owning element for content blocks
-                    $block = Craft::$app->getElements()->getElementById($element['id']);
-                    $owner = $block->getOwner();
-                    $elements[$i]['type'] = $owner::class;
-                    $elements[$i]['id'] = $owner->id;
-                }
-            }
-        }
-
         $elements = $this->groupByType($elements);
 
         $results = [];
@@ -358,7 +348,9 @@ class ElementmapRenderer extends Component
         }
 
         usort($results, function($a, $b) {
-            return strcmp($a['sort'] . $a['title'], $b['sort'] . $b['title']);
+            return $this->settings->sortByElementType ?
+                strcmp($a['sort'] . $a['title'], $b['sort'] . $b['title']) :
+                strcmp($a['title'], $b['title']);
         });
 
         return $results;
@@ -450,6 +442,36 @@ class ElementmapRenderer extends Component
                 'color' => $color,
                 'title' => $title,
                 'url' => $linkToNestedElement ? $element->cpEditUrl : $rootOwner->cpEditUrl,
+                'sort' => self::ELEMENT_TYPE_SORT_MAP[get_class($element)],
+                'canView' => $element->canView($this->user)
+            ];
+        }
+
+        return $results;
+    }
+
+    private function getContentBlockElements($elementIds, $siteId)
+    {
+        $elements = $this->getElementsForType(
+            new ContentBlockQuery('craft\elements\ContentBlock'),
+            $elementIds,
+            $siteId);
+
+        $results = [];
+
+        /** @var Entry $element */
+        foreach ($elements as $element) {
+
+            $rootOwner = $this->getRootOwner($element);
+
+            $title = $this->getTitleForElement($element, $rootOwner);
+
+            $results[] = [
+                'id' => $element->id,
+                'icon' => '@appicons/block.svg',
+                'color' => 'var(--black)',
+                'title' => $title,
+                'url' => $rootOwner->cpEditUrl,
                 'sort' => self::ELEMENT_TYPE_SORT_MAP[get_class($element)],
                 'canView' => $element->canView($this->user)
             ];

@@ -23,4 +23,7 @@ return [
     'Showing root owners improves user experience significantly, but adds a lot of overhead.' => 'Das Anzeigen von Root ownern verbessert die Benutzererfahrung erheblich, verursacht jedoch zusätzlichen Aufwand.',
     'This slows down performance significantly, so disable it if a lot of images are related to an element.' => 'Dies verlangsamt die Leistung erheblich, daher deaktivieren, wenn viele Bilder mit einem Element verknüpft sind.',
     'Where the link for a found relationship to a nested element should point to' => 'Wohin soll der Link für eine gefundene Beziehung zu einem verschachtelten Element führen?',
+    'Sort results by' => 'Ergebnisse sortieren nach',
+    'Title' => 'Titel',
+    'Element type and title' => 'Elementtyp und Titel',
 ];

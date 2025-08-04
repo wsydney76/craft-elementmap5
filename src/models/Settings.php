@@ -15,5 +15,6 @@ class Settings extends Model
     public bool $showThumbnails = false;
     public bool $linkToNestedElement = false;
     public bool $showRootOwner = true;
+    public bool $sortByElementType = true;
 
 }

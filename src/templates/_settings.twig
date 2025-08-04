@@ -49,3 +49,12 @@
     offLabel: 'Show canonical elements and drafts'|t('_elementmap'),
     warning: config.showRevisions is defined ? _self.configWarning('showRevisions'),
 }) }}
+
+{{ forms.lightswitchField({
+    label: 'Sort results by'|t('_elementmap'),
+    name: 'sortByElementType',
+    on: settings.sortByElementType,
+    onLabel: 'Element type and title'|t('_elementmap'),
+    offLabel: 'Title'|t('_elementmap'),
+    warning: config.sortByElementType is defined ? _self.configWarning('sortByElementType'),
+}) }}
