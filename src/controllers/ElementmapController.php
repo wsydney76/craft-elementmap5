@@ -36,6 +36,12 @@ class ElementmapController extends Controller
         $plugin = ElementmapPlugin::getInstance();
         $map = $plugin->renderer->getElementMap($element, $element->siteId);
 
+        if (Craft::$app->request->getParam('json')) {
+            return $this->asJson([
+                'map' => $map,
+            ]);
+        }
+
         return Craft::$app->view->renderTemplate('_elementmap/_elementmap_content', [
             'element' => $element,
             'map' => $map,
