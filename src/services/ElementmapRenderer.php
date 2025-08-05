@@ -638,10 +638,11 @@ class ElementmapRenderer extends Component
      */
     private function getAssetElements($elementIds, $siteId)
     {
-        $criteria = new AssetQuery('craft\elements\Asset');
-        $criteria->id = $elementIds;
-        $criteria->siteId = $siteId;
-        $elements = $criteria->all();
+
+        $elements = $this->getElementsForType(
+            new AssetQuery('craft\\elements\\Asset'),
+            $elementIds,
+            $siteId);
 
         $results = [];
         foreach ($elements as $element) {
@@ -649,7 +650,7 @@ class ElementmapRenderer extends Component
             $results[] = [
                 'id' => $element->id,
                 'kind' => $element->kind,
-                'image' => $element->kind === 'image' && $this->settings->showThumbnails == 'true' ? $element->getUrl(['width' => 32, 'height' => 32]) : '',
+                'image' => $element->kind === 'image' && $this->settings->showThumbnails == 'true' ? $element->getUrl(['width' => 64, 'height' => 48]) : '',
                 'title' => $element->title . ' (' . $volumeName . ')',
                 'url' => $element->cpEditUrl,
                 'fileUrl' => $element->url,
@@ -792,7 +793,7 @@ class ElementmapRenderer extends Component
 
         $paginator = new Paginator($query, [
             'currentPage' => 1,
-            'pageSize' => $this->settings->limitPerType,
+            'pageSize' => (int)$this->settings->limitPerType,
         ]);
 
         if ($paginator->getTotalResults() > $this->settings->limitPerType) {
