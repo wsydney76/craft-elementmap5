@@ -38,7 +38,8 @@ class ElementmapController extends Controller
 
         return Craft::$app->view->renderTemplate('_elementmap/_elementmap_content', [
             'element' => $element,
-            'map' => $map
+            'map' => $map,
+            'settings' => $plugin->getSettings(),
         ]);
     }
 

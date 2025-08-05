@@ -81,3 +81,15 @@
     tip: 'The max. number of elements shown per element type.<br> This refers to the elements directly linked to the given element.'|t('_elementmap'),
     warning: config.limitPerType is defined ? _self.configWarning('limitPerType'),
 }) }}
+
+{{ forms.selectizeField({
+    label: 'Show titles of unpermitted elements?'|t('_elementmap'),
+    name: 'showUnpermitted',
+    value: settings.showUnpermitted,
+    options: [
+        {value: 'true', label: 'Show title of unpermitted elements, but without edit link'|t('_elementmap')},
+        {value: 'false', label: 'Show placeholder'|t('_elementmap')},
+    ],
+    tip: 'This refers to the `canView` permission.'|t('_elementmap'),
+    warning: config.showUnpermitted is defined ? _self.configWarning('showUnpermitted'),
+}) }}

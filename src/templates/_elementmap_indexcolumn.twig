@@ -1,15 +1,23 @@
 {%- do view.registerAssetBundle("wsydney76\\elementmap\\web\\assets\\elementmap\\ElementMapAsset") -%}
-
 <div class="elementmap-table">
     {% if elements is iterable %}
         <ul>
             {% for element in elements %}
                 <li>
-                    <a target="_blank" href="{{ element.url }}" data-id="{{ element.id }}" data-editable>
-                        {#{% if element.icon is defined %}
-                            <span class="icon icon-mask">{{ svg(element.icon) }}</span>
-                        {% endif %}#}
-                        {{ element.title }}</a>
+                    {% if element.canView  %}
+                        <a href="{{ element.url }}">
+                            {{ element.title }}
+                        </a>
+                    {% else %}
+                        <div>
+                            {% if settings.showUnpermitted == 'true' %}
+                                {{ element.title }}
+                            {% else %}
+                                {{ 'No permission to view this element'|t('_elementmap') }}
+                            {% endif %}
+                        </div>
+
+                    {% endif %}
                 </li>
             {% endfor %}
         </ul>

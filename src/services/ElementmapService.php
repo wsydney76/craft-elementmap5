@@ -138,14 +138,14 @@ class ElementmapService
                 '_elementmap/_elementmap_indexcolumn', [
                 'elements' => count($elements) + $renderer->elementsNotShown
             ]);
-
         } else if ($event->attribute === 'elementmap_incomingReferences') {
             $event->handled = true;
             $elements = $renderer->getIncomingElements($element, $element->site->id);
             $event->html = Craft::$app->view->renderTemplate(
                 '_elementmap/_elementmap_indexcolumn', [
                 'elements' => $elements,
-                'elementsNotShown' => $renderer->elementsNotShown
+                'elementsNotShown' => $renderer->elementsNotShown,
+                'settings' => ElementmapPlugin::getInstance()->getSettings()
             ]);
         } else if ($event->attribute === 'elementmap_outgoingReferences') {
             $event->handled = true;
@@ -153,7 +153,8 @@ class ElementmapService
             $event->html = Craft::$app->view->renderTemplate(
                 '_elementmap/_elementmap_indexcolumn', [
                 'elements' => $elements,
-                'elementsNotShown' => $renderer->elementsNotShown
+                'elementsNotShown' => $renderer->elementsNotShown,
+                'settings' => ElementmapPlugin::getInstance()->getSettings()
             ]);
         }
     }

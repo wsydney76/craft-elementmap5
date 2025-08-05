@@ -1,5 +1,4 @@
 {# var map array from ElementmapController  #}
-
 {% from _self import showElement %}
 
 <div class="elementmap">
@@ -13,7 +12,7 @@
 
     <ul>
         {% for element in map.incoming %}
-            {{ showElement(element) }}
+            {{ showElement(element, settings) }}
         {% endfor %}
         {% if map.incoming | length == 0 %}
             <li>{{ 'None'|t('_elementmap') }}</li>
@@ -25,7 +24,7 @@
     <label>{{ 'References from this element'|t('_elementmap') }}</label>
     <ul>
         {% for element in map.outgoing %}
-            {{ showElement(element) }}
+            {{ showElement(element, settings) }}
         {% endfor %}
         {% if map.outgoing | length == 0 %}
             <li>{{ 'None'|t('_elementmap') }}</li>
@@ -40,7 +39,7 @@
 {% endif %}
 
 
-{% macro showElement(element) %}
+{% macro showElement(element, settings) %}
     <li>
         <div class="elementmap-item">
             {% if element.image is defined %}
@@ -66,12 +65,19 @@
                     <div class="icon icon-mask">{{ svg(element.icon)|attr({style: "fill: #{element.color ?? '#000000'};"}) }}</div>
                 {% endif %}
             {% endif %}
-            {% if element.canView ?? true %}
+            {% if element.canView  %}
                 <a href="{{ element.url }}" data-id="{{ element.id }}" data-editable>
                     {{ element.title }}
                 </a>
             {% else %}
-                {{ element.title }}
+                <div>
+                    {% if settings.showUnpermitted == 'true' %}
+                        {{ element.title }}
+                    {% else %}
+                        {{ 'No permission to view this element'|t('_elementmap') }}
+                    {% endif %}
+                </div>
+
             {% endif %}
         </div>
     </li>
