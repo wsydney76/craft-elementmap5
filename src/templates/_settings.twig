@@ -70,3 +70,14 @@
     ],
     warning: config.orderResults is defined ? _self.configWarning('orderResults'),
 }) }}
+
+{{ forms.textField({
+    label: 'Limit per element type'|t('_elementmap'),
+    name: 'limitPerType',
+    type: 'number',
+    min: 0,
+    size: 5,
+    value: settings.limitPerType,
+    tip: 'The max. number of elements shown per element type.<br> This refers to the elements directly linked to the given element.'|t('_elementmap'),
+    warning: config.limitPerType is defined ? _self.configWarning('limitPerType'),
+}) }}

@@ -18,5 +18,10 @@
     {% else %}
         <span>--</span>
     {% endif %}
+    {% if elementsNotShown is defined and elementsNotShown %}
+        <div class="elementmap-info">
+            {{ elementsNotShown }} {{ '{count,plural,=1{more element} other{more elements}} not shown due to limit'|t('_elementmap', {count: elementsNotShown}) }}
+        </div>
+    {% endif %}
 
 </div>

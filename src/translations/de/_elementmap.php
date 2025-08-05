@@ -26,4 +26,7 @@ return [
     'Sort results by' => 'Ergebnisse sortieren nach',
     'Title' => 'Titel',
     'Element type and title' => 'Elementtyp und Titel',
+    'Limit per element type' => 'Limit pro Elementtyp',
+    'The max. number of elements shown per element type.<br> This refers to the elements directly linked to the given element.' => 'Die maximale Anzahl der pro Elementtyp angezeigten Elemente.<br> Dies bezieht sich auf die direkt mit dem angegebenen Element verknüpften Elemente.',
+    '{count,plural,=1{more element} other{more elements}} not shown due to limit' => '{count,plural,=1{weiteres Element} other{weitere Elemente}} nicht angezeigt aufgrund des Limits',
 ];

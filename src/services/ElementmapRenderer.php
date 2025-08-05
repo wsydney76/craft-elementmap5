@@ -15,6 +15,7 @@ use craft\base\ElementInterface;
 use craft\commerce\elements\db\ProductQuery;
 use craft\commerce\elements\db\VariantQuery;
 use craft\commerce\elements\Order;
+use craft\db\Paginator;
 use craft\db\Query;
 use craft\elements\Address;
 use craft\elements\ContentBlock;
@@ -75,6 +76,8 @@ class ElementmapRenderer extends Component
     private Settings $settings;
     private User $user;
 
+    public int $elementsNotShown = 0;
+
     public function init(): void
     {
         // Should be present as the controller requires login
@@ -101,6 +104,7 @@ class ElementmapRenderer extends Component
         return [
             'incoming' => $this->getIncomingElements($element, $siteId),
             'outgoing' => $this->getOutgoingElements($element, $siteId),
+            'elementsNotShown' => $this->elementsNotShown,
         ];
     }
 
@@ -781,7 +785,21 @@ class ElementmapRenderer extends Component
         $query->status(null);
         $query->revisions($this->settings->showRevisions == 'true' ? null : false);
         $query->orderBy('title');
-        return $query->all();
+
+        if (!$this->settings->limitPerType) {
+            return $query->all();
+        }
+
+        $paginator = new Paginator($query, [
+            'currentPage' => 1,
+            'pageSize' => $this->settings->limitPerType,
+        ]);
+
+        if ($paginator->getTotalResults() > $this->settings->limitPerType) {
+            $this->elementsNotShown += $paginator->getTotalResults() - $this->settings->limitPerType;
+        }
+
+        return $paginator->getPageResults();
     }
 
     private function getExtraText($element, $type)

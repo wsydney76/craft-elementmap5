@@ -33,6 +33,13 @@
     </ul>
 </div>
 
+{% if map.elementsNotShown %}
+    <div class="elementmap-info">
+        {{ map.elementsNotShown }} {{ 'more'|t }} {{ '{count,plural,=1{element} other{elements}} not shown due to limit'|t('_elementmap', {count: map.elementsNotShown}) }}
+    </div>
+{% endif %}
+
+
 {% macro showElement(element) %}
     <li>
         <div class="elementmap-item">

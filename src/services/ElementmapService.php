@@ -4,6 +4,7 @@ namespace wsydney76\elementmap\services;
 
 use Craft;
 use craft\base\Element;
+use craft\base\ElementInterface;
 use craft\base\Event;
 use craft\commerce\elements\Product;
 use craft\elements\Asset;
@@ -40,54 +41,54 @@ class ElementmapService
 
         // Dont' show button in slideout editors
         // if (!Craft::$app->request->isConsoleRequest && !Craft::$app->request->isAjax) {
-            Event::on(
-                Entry::class,
-                Entry::EVENT_DEFINE_SIDEBAR_HTML,
-                function(DefineHtmlEvent $event) {
-                    $event->html .= $this->renderSidebarButton($event->sender, 'entry');;
-                }
-            );
-            Event::on(
-                Category::class,
-                Category::EVENT_DEFINE_SIDEBAR_HTML,
-                function(DefineHtmlEvent $event) {
-                    $event->html .= $this->renderSidebarButton($event->sender, 'category');;
-                }
-            );
-            Event::on(
-                Asset::class,
-                Asset::EVENT_DEFINE_SIDEBAR_HTML,
-                function(DefineHtmlEvent $event) {
-                    $event->html .= $this->renderSidebarButton($event->sender, 'asset');;
-                }
-            );
-            Event::on(
-                User::class,
-                User::EVENT_DEFINE_SIDEBAR_HTML,
-                function(DefineHtmlEvent $event) {
-                    $event->html .= $this->renderSidebarButton($event->sender, 'asset');;
-                }
-            );
-
-            if (Craft::$app->plugins->isPluginEnabled('campaign')) {
-                Event::on(
-                    CampaignElement::class,
-                    CampaignElement::EVENT_DEFINE_SIDEBAR_HTML,
-                    function(DefineHtmlEvent $event) {
-                        $event->html .= $this->renderSidebarButton($event->sender, 'campaign');;
-                    }
-                );
+        Event::on(
+            Entry::class,
+            Entry::EVENT_DEFINE_SIDEBAR_HTML,
+            function(DefineHtmlEvent $event) {
+                $event->html .= $this->renderSidebarButton($event->sender, 'entry');;
             }
-
-            if (Craft::$app->plugins->isPluginEnabled('commerce')) {
-                Event::on(
-                    Product::class,
-                    Product::EVENT_DEFINE_SIDEBAR_HTML,
-                    function(DefineHtmlEvent $event) {
-                        $event->html .= $this->renderSidebarButton($event->sender, 'product');;
-                    }
-                );
+        );
+        Event::on(
+            Category::class,
+            Category::EVENT_DEFINE_SIDEBAR_HTML,
+            function(DefineHtmlEvent $event) {
+                $event->html .= $this->renderSidebarButton($event->sender, 'category');;
             }
+        );
+        Event::on(
+            Asset::class,
+            Asset::EVENT_DEFINE_SIDEBAR_HTML,
+            function(DefineHtmlEvent $event) {
+                $event->html .= $this->renderSidebarButton($event->sender, 'asset');;
+            }
+        );
+        Event::on(
+            User::class,
+            User::EVENT_DEFINE_SIDEBAR_HTML,
+            function(DefineHtmlEvent $event) {
+                $event->html .= $this->renderSidebarButton($event->sender, 'asset');;
+            }
+        );
+
+        if (Craft::$app->plugins->isPluginEnabled('campaign')) {
+            Event::on(
+                CampaignElement::class,
+                CampaignElement::EVENT_DEFINE_SIDEBAR_HTML,
+                function(DefineHtmlEvent $event) {
+                    $event->html .= $this->renderSidebarButton($event->sender, 'campaign');;
+                }
+            );
+        }
+
+        if (Craft::$app->plugins->isPluginEnabled('commerce')) {
+            Event::on(
+                Product::class,
+                Product::EVENT_DEFINE_SIDEBAR_HTML,
+                function(DefineHtmlEvent $event) {
+                    $event->html .= $this->renderSidebarButton($event->sender, 'product');;
+                }
+            );
+        }
         // }
 
         // Allow some elements to have map data shown in their overview tables.
@@ -120,26 +121,40 @@ class ElementmapService
      */
     public function getElementmapTableAttributeHtml(DefineAttributeHtmlEvent $event)
     {
+        $renderer = new ElementmapRenderer();
+        /** @var Element $element */
+        $element = $event->sender;
         if ($event->attribute === 'elementmap_incomingReferenceCount') {
             $event->handled = true;
-            $entry = $event->sender;
-            $elements = ElementmapPlugin::getInstance()->renderer->getIncomingElements($entry, $entry->site->id);
-            $event->html = Craft::$app->view->renderTemplate('_elementmap/_elementmap_indexcolumn', ['elements' => count($elements)]);
+            $elements = $renderer->getIncomingElements($element, $element->site->id);
+            $event->html = Craft::$app->view->renderTemplate(
+                '_elementmap/_elementmap_indexcolumn', [
+                'elements' => count($elements) + $renderer->elementsNotShown
+            ]);
         } else if ($event->attribute === 'elementmap_outgoingReferenceCount') {
             $event->handled = true;
-            $entry = $event->sender;
-            $elements = ElementmapPlugin::getInstance()->renderer->getOutgoingElements($entry, $entry->site->id);
-            $event->html = Craft::$app->view->renderTemplate('_elementmap/_elementmap_indexcolumn', ['elements' => count($elements)]);
+            $elements = $renderer->getOutgoingElements($element, $element->site->id);
+            $event->html = Craft::$app->view->renderTemplate(
+                '_elementmap/_elementmap_indexcolumn', [
+                'elements' => count($elements) + $renderer->elementsNotShown
+            ]);
+
         } else if ($event->attribute === 'elementmap_incomingReferences') {
             $event->handled = true;
-            $entry = $event->sender;
-            $elements = ElementmapPlugin::getInstance()->renderer->getIncomingElements($entry, $entry->site->id);
-            $event->html = Craft::$app->view->renderTemplate('_elementmap/_elementmap_indexcolumn', ['elements' => $elements]);
+            $elements = $renderer->getIncomingElements($element, $element->site->id);
+            $event->html = Craft::$app->view->renderTemplate(
+                '_elementmap/_elementmap_indexcolumn', [
+                'elements' => $elements,
+                'elementsNotShown' => $renderer->elementsNotShown
+            ]);
         } else if ($event->attribute === 'elementmap_outgoingReferences') {
             $event->handled = true;
-            $entry = $event->sender;
-            $elements = ElementmapPlugin::getInstance()->renderer->getOutgoingElements($entry, $entry->site->id);
-            $event->html = Craft::$app->view->renderTemplate('_elementmap/_elementmap_indexcolumn', ['elements' => $elements]);
+            $elements = $renderer->getOutgoingElements($element, $element->site->id);
+            $event->html = Craft::$app->view->renderTemplate(
+                '_elementmap/_elementmap_indexcolumn', [
+                'elements' => $elements,
+                'elementsNotShown' => $renderer->elementsNotShown
+            ]);
         }
     }
 
@@ -158,9 +173,9 @@ class ElementmapService
     {
         return Craft::$app->view->renderTemplate(
             '_elementmap/_elementmap_sidebarbutton', [
-                'element' => $element,
-                'class' => $class
-            ]);
+            'element' => $element,
+            'class' => $class
+        ]);
     }
 
     /**

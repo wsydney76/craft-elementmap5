@@ -16,5 +16,6 @@ class Settings extends Model
     public string $linkToElement = 'false';
     public string $showRootOwner = 'true';
     public string $orderResults = 'elementType';
+    public string $limitPerType = '100';
 
 }
