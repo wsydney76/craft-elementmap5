@@ -1,8 +1,97 @@
-{%- do view.registerAssetBundle("wsydney76\\elementmap\\web\\assets\\elementmap\\ElementMapAsset") -%}
+{# TODO: Refactor. This is a hack so that this will also work (mostly) on slideouts #}
 
-<a class="btn" id="elementmap-button">{{ 'Relationships'|t('_elementmap') }}</a>
+{% set nr = random(999999999) %}
+{% set id = "elementmap-button_#{nr}" %}
+
+<a class="btn {{ id }}" id="{{ id }}">{{ 'Relationships'|t('_elementmap') }}</a>
 
 {% js at POS_END %}
-    elementmapAjaxBaseUrl = '{{ cpUrl("elementmap-getrelations/#{element.site.id}/%s") }}';
-    elementmapElementId = {{ element.id }};
+elementmapAjaxBaseUrl = '{{ cpUrl("elementmap-getrelations/#{element.site.id}/%s") }}';
+elementmapElementId_{{ nr }} = {{ element.id }};
+
+var $btn_{{ nr }} = $('.{{ id }}');
+
+$btn_{{ nr }}.on('click', function() {
+
+    url = elementmapAjaxBaseUrl.replace('%s', elementmapElementId_{{ nr }});
+
+    $.get(url)
+        .done(function(data) {
+            const hud = new Garnish.HUD($btn_{{ nr }}, data, {
+                orientations: ['top', 'bottom', 'right', 'left'],
+                hudClass: 'hud guide-hud',
+            });
+        })
+        .fail(function() {
+            alert("Error, see developer tools -> network -> Fetch/XHR for details.");
+            console.error("Element Map: Failed to load map data from " + url);
+        });
+});
+
+
 {% endjs %}
+
+{% js at POS_END %}
+// TODO: Known issue: This does not catch the creation of a provisional draft in slideouts.
+setTimeout(() => {
+
+    Garnish.on(Craft.ElementEditor, 'createProvisionalDraft', function(ev) {
+        var editor = ev.target;
+        var elementId = editor.settings.elementId;
+        console.log(elementId)
+        // Do something with the element ID
+        elementmapElementId_{{ nr }} = elementId;
+    });
+}, 500)
+{% endjs %}
+
+{% css %}
+.elementmap svg {
+    width: 32px !important;
+    height: 32px !important;
+    padding-right: 12px
+}
+
+.elementmap label {
+    font-weight: bold
+}
+
+.elementmap ul {
+    padding-top: 12px;
+    padding-bottom: 12px
+}
+
+.elementmap .thumbnail {
+    padding-right: 12px
+}
+
+
+.elementmap-table svg {
+    width: 16px !important;
+    height: 16px !important
+}
+
+.elementmap-info {
+    margin-top: 6px;
+    font-size: 13px
+}
+
+.elementmap-item {
+    display: flex;
+    align-items: center
+}
+{% endcss %}
+
+
+{% css %}
+#{{ id }} {
+    margin: 6px 0;
+}
+
+.edit-global-set #{{ id }} {
+    margin-top: 36px;
+}
+{% endcss %}
+
+
+
