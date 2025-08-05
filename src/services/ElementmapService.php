@@ -121,41 +121,47 @@ class ElementmapService
      */
     public function getElementmapTableAttributeHtml(DefineAttributeHtmlEvent $event)
     {
-        $renderer = new ElementmapRenderer();
-        /** @var Element $element */
-        $element = $event->sender;
-        if ($event->attribute === 'elementmap_incomingReferenceCount') {
+        try {
+            $renderer = new ElementmapRenderer();
+            /** @var Element $element */
+            $element = $event->sender;
+            if ($event->attribute === 'elementmap_incomingReferenceCount') {
+                $event->handled = true;
+                $elements = $renderer->getIncomingElements($element, $element->site->id);
+                $event->html = Craft::$app->view->renderTemplate(
+                    '_elementmap/_elementmap_indexcolumn', [
+                    'elements' => count($elements) + $renderer->elementsNotShown
+                ]);
+            } else if ($event->attribute === 'elementmap_outgoingReferenceCount') {
+                $event->handled = true;
+                $elements = $renderer->getOutgoingElements($element, $element->site->id);
+                $event->html = Craft::$app->view->renderTemplate(
+                    '_elementmap/_elementmap_indexcolumn', [
+                    'elements' => count($elements) + $renderer->elementsNotShown
+                ]);
+            } else if ($event->attribute === 'elementmap_incomingReferences') {
+                $event->handled = true;
+                $elements = $renderer->getIncomingElements($element, $element->site->id);
+                $event->html = Craft::$app->view->renderTemplate(
+                    '_elementmap/_elementmap_indexcolumn', [
+                    'elements' => $elements,
+                    'elementsNotShown' => $renderer->elementsNotShown,
+                    'settings' => ElementmapPlugin::getInstance()->getSettings()
+                ]);
+            } else if ($event->attribute === 'elementmap_outgoingReferences') {
+                $event->handled = true;
+                $elements = $renderer->getOutgoingElements($element, $element->site->id);
+                $event->html = Craft::$app->view->renderTemplate(
+                    '_elementmap/_elementmap_indexcolumn', [
+                    'elements' => $elements,
+                    'elementsNotShown' => $renderer->elementsNotShown,
+                    'settings' => ElementmapPlugin::getInstance()->getSettings()
+                ]);
+            }
+
+        } catch (Exception $e) {
             $event->handled = true;
-            $elements = $renderer->getIncomingElements($element, $element->site->id);
-            $event->html = Craft::$app->view->renderTemplate(
-                '_elementmap/_elementmap_indexcolumn', [
-                'elements' => count($elements) + $renderer->elementsNotShown
-            ]);
-        } else if ($event->attribute === 'elementmap_outgoingReferenceCount') {
-            $event->handled = true;
-            $elements = $renderer->getOutgoingElements($element, $element->site->id);
-            $event->html = Craft::$app->view->renderTemplate(
-                '_elementmap/_elementmap_indexcolumn', [
-                'elements' => count($elements) + $renderer->elementsNotShown
-            ]);
-        } else if ($event->attribute === 'elementmap_incomingReferences') {
-            $event->handled = true;
-            $elements = $renderer->getIncomingElements($element, $element->site->id);
-            $event->html = Craft::$app->view->renderTemplate(
-                '_elementmap/_elementmap_indexcolumn', [
-                'elements' => $elements,
-                'elementsNotShown' => $renderer->elementsNotShown,
-                'settings' => ElementmapPlugin::getInstance()->getSettings()
-            ]);
-        } else if ($event->attribute === 'elementmap_outgoingReferences') {
-            $event->handled = true;
-            $elements = $renderer->getOutgoingElements($element, $element->site->id);
-            $event->html = Craft::$app->view->renderTemplate(
-                '_elementmap/_elementmap_indexcolumn', [
-                'elements' => $elements,
-                'elementsNotShown' => $renderer->elementsNotShown,
-                'settings' => ElementmapPlugin::getInstance()->getSettings()
-            ]);
+            $event->html = 'Error: ' . $e->getMessage();
         }
     }
 
