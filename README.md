@@ -54,7 +54,9 @@ Note: While this is actually the most used feature, it is currently only used/te
 
 In complex multi-site, multi-user, Commerce settings or deeply nested content models, it hopefully works as expected, but maybe not.
 
-Also, it can only detect relationships in the `relations` database table, so it won't work for links created by reference tags, or in CKEditor inline links.
+Also, it can only detect relationships in the `relations` database table, so it won't work for links created by reference tags, in CKEditor inline links.
+
+Also, plugins that create their own custom relationships are not supported (like Verbb Navigation).
 
 Handles relationships for
 
