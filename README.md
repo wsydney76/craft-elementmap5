@@ -38,7 +38,11 @@ Then, install the plugin via the Craft CMS Control Panel, or run `craft plugin/i
 
 ## History/Motivation
 
-This started years as an enhanced fork of the abandoned Element Map plugin for Craft CMS 3, was kept alive for Craft 4/5,
+The type of websites we build often have complex relationships between elements, like entries, matrix blocks, categories, assets, products, etc.
+
+It was crucial to see these relationships in the Control Panel, so that authors can easily find related content, and editors can see where elements are used.
+
+This plugin started years ago as an enhanced fork of the abandoned Element Map plugin for Craft CMS 3, was kept alive for Craft 4/5,
 then became part of the [Extras bundle](https://github.com/wsydney76/extras). That was a bit over the top, so it was split out again into its own plugin.
 
 Partially refactored, with some enhancements (and probably some new bugs).
