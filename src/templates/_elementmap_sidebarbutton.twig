@@ -32,7 +32,6 @@ $btn_{{ nr }}.on('click', function() {
 {% endjs %}
 
 {% js at POS_END %}
-// TODO: Known issue: This does not catch the creation of a provisional draft in slideouts.
 setTimeout(() => {
 
     Garnish.on(Craft.ElementEditor, 'createProvisionalDraft', function(ev) {

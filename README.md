@@ -47,7 +47,7 @@ What we wanted to achieve and could not find in other plugins back then (or now)
 
 * Show relations on demand in a popup instead of in the sidebar, so that page load performance is not affected.
 * Tries to be as comprehensive as possible.
-* Shows more infos like element/product type, (colored) icons, image thumbnails for a better author experience.
+* Shows more infos like element/product type, (colored) icons, image thumbnails, matrix field name etc. for a better author experience.
 * Include relationships for drafts (include draft creator), and (optionally) revisions.
 * For nested elements, also show the root owner, so that you can see where the element is actually used.
 * Supports major Craft CMS plugins like Commerce, Campaign, Neo.
@@ -116,6 +116,65 @@ Does not handle relationships for tags.
 * For elements that don't support drafts (like Assets, Variants), the plugin does not detect relationships from unsaved changes.
 * The use in element indexes is not performance optimized, so it may not work well with large sites with many elements and relationships.
 * Performance relevant setting are not yet granular enough.
+
+## API
+
+Get HTML fragment or JSON data for an element.
+
+User must be logged in.
+
+### HTML:
+
+```twig
+'{{ cpUrl("elementmap-getrelations/#{element.site.id}/#{element.id}") }}'
+```
+
+Example: `https://test-extras.ddev.site/admin/elementmap-getrelations/1/6843`
+
+### JSON:
+
+Add `?json=1` to the URL to get a JSON response.
+
+Return format:
+
+```json
+{
+  "map": {
+    "incoming": [
+      {
+        "id": 6790,
+        "icon": "@appicons/bullseye-arrow.svg",
+        "color": "var(--black)",
+        "title": "Test Category -> Internal link",
+        "url": "https://test-extras.ddev.site/admin/categories/testCategories/6782-test-category?site=de",
+        "sort": "01",
+        "canView": true
+      },
+      {
+        "id": 6842,
+        "icon": "@appicons/vial.svg",
+        "color": "var(--fuchsia-500)",
+        "title": "Test Globals (Test, Provisional Draft, admin)",
+        "url": "https://test-extras.ddev.site/admin/entries/test/6778-test-globals?site=de",
+        "sort": "01",
+        "canView": true
+      }
+    ],
+    "outgoing": [
+      {
+        "id": 6794,
+        "icon": "@appicons/vial.svg",
+        "color": "var(--fuchsia-500)",
+        "title": "Test Nested Image (Test)",
+        "url": "https://test-extras.ddev.site/admin/entries/test/6794-test-nested-image?site=de",
+        "sort": "01",
+        "canView": true
+      }
+    ],
+    "elementsNotShown": 0
+  }
+}
+```
 
 ## Events
 
@@ -234,3 +293,4 @@ Use at your own risk.
 * Improve performance for large sites with many elements and relationships
 * Add more granular settings to control performance
 * Provide a way to show all relationships beyond limits from settings
+* Selectively show relationships for certain element types
