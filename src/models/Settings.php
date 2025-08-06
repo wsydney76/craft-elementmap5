@@ -11,7 +11,7 @@ use craft\base\Model;
 class Settings extends Model
 {
     public string $showSites = 'all';
-    public string $showThumbnails = 'false';
+    public string $showThumbnails = 'true';
     public string $showRevisions = 'false';
     public string $linkToElement = 'false';
     public string $showRootOwner = 'true';
