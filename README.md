@@ -6,7 +6,7 @@ Display incoming and outgoing relationships for elements in Craft's Control Pane
 
 Developed for Craft CMS 5.8 and PHP 8.3.
 
-Should work with Craft CMS 5.0.0 or later, and PHP 8.2 or later, but untested.
+Should work with Craft CMS 5.4.0 (where `getRootOwner` was introduced) or later, and PHP 8.2 or later, but untested.
 
 ## Installation
 
