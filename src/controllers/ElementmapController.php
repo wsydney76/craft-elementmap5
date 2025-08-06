@@ -48,30 +48,4 @@ class ElementmapController extends Controller
             'settings' => $plugin->getSettings(),
         ]);
     }
-
-    // Public Methods
-    // =========================================================================
-    /**
-     * @param $query
-     * @param $id
-     * @param $site
-     * @return array|ElementInterface|mixed|null
-     */
-    protected function getElement($query, $id, $site): mixed
-    {
-        $draftId = Craft::$app->request->getParam('draftId');
-        $siteId = Craft::$app->sites->getSiteByHandle($site)->id;
-
-        if ($draftId) {
-            $elementRecord = Element::findOne(['draftId' => $draftId]);
-            if (!$elementRecord) {
-                throw new NotFoundHttpException("Draft not found: {$draftId}");
-            }
-            return Craft::$app->elements->getElementById($elementRecord->id, $elementRecord->type, $siteId);
-        }
-
-        return Craft::$app->elements->getElementById($id, siteId: $siteId);
-    }
-
-
 }

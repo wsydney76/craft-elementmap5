@@ -1,5 +1,7 @@
 # Element Map 5
 
+__Read me is work in progress!__
+
 Display incoming and outgoing relationships for elements in Craft's Control Panel.
 
 ## Requirements
@@ -22,7 +24,7 @@ Add to `composer.json` file in your project root to require this plugin:
   "repositories": [
     {
       "type": "vcs",
-      "url": "https://github.com/wsydney76/craft-element-map-5"
+      "url": "https://github.com/wsydney76/craft-elementmap5"
     }
   ]
 }
@@ -118,3 +120,12 @@ Event::on(
     }
 );
 ```
+
+## AI generated documentation
+
+[ElementmapService](docs/ElementmapService.md)
+[ElementmapRenderer](docs/ElementmapRenderer.md)
+[ElementmapController](docs/ElementmapController.md)
+[ElementmapSidebarButton](docs/elementmap_sidebarbutton.md)
+[ElementmapContent](docs/elementmap_content.md)
+
