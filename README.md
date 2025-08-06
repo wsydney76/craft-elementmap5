@@ -108,3 +108,13 @@ Event::on(
     }
 );
 ```
+
+```php
+Event::on(
+    ElementmapRenderer::class,
+    ElementmapRenderer::EVENT_ELEMENT_TYPE_CONFIG,
+    function(ElementTypeConfigEvent $event) {
+        unset($event->config['craft\elements\Category']);
+    }
+);
+```

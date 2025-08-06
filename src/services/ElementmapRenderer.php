@@ -34,6 +34,7 @@ use putyourlightson\campaign\elements\CampaignElement;
 use wsydney76\elementmap\ElementmapPlugin;
 use wsydney76\elementmap\events\ElementmapAddEvent;
 use wsydney76\elementmap\events\ElementmapDataEvent;
+use wsydney76\elementmap\events\ElementTypeConfigEvent;
 use wsydney76\elementmap\models\Settings;
 use yii\base\Component;
 use function array_merge;
@@ -43,7 +44,7 @@ class ElementmapRenderer extends Component
 {
 // Constants
 
-    const ELEMENT_TYPE_CONFIG = [
+    private array $elementTypeConfig = [
         'craft\elements\Entry' => [
             'get' => 'getEntryElements',
             'sort' => '01',
@@ -94,6 +95,8 @@ class ElementmapRenderer extends Component
         ],
     ];
 
+    public const EVENT_ELEMENT_TYPE_CONFIG = 'elementTypeConfig';
+
     public const EVENT_ELEMENT_MAP_DATA = 'elementmap_data';
     public const EVENT_ADD_ELEMENTS = 'addElements';
 
@@ -107,6 +110,18 @@ class ElementmapRenderer extends Component
         // Should be present as the controller requires login
         $this->user = Craft::$app->getUser()->getIdentity();
         $this->settings = ElementmapPlugin::getInstance()->getSettings();
+
+        // Allow external modification of elementTypeConfig
+        if ($this->hasEventHandlers(static::EVENT_ELEMENT_TYPE_CONFIG)) {
+            $event = new ElementTypeConfigEvent([
+                'config' => $this->elementTypeConfig,
+            ]);
+            $this->trigger(static::EVENT_ELEMENT_TYPE_CONFIG, $event);
+            if ($event->config) {
+                $this->elementTypeConfig = $event->config;
+            }
+        }
+
     }
 
     /**
@@ -396,9 +411,9 @@ class ElementmapRenderer extends Component
             reset($elements);
             $type = key($elements);
 
-            if (isset(self::ELEMENT_TYPE_CONFIG[$type]['get'])) {
+            if (isset($this->elementTypeConfig[$type]['get'])) {
                 /** @noinspection SlowArrayOperationsInLoopInspection */
-                $results = array_merge($results, call_user_func([$this, self::ELEMENT_TYPE_CONFIG[$type]['get']], $elements[$type], $siteId));
+                $results = array_merge($results, call_user_func([$this, $this->elementTypeConfig[$type]['get']], $elements[$type], $siteId));
             } else {
                 if ($this->hasEventHandlers(static::EVENT_ELEMENT_MAP_DATA)) {
                     $event = new ElementmapDataEvent([
@@ -492,7 +507,7 @@ class ElementmapRenderer extends Component
                 'color' => $color,
                 'title' => $title,
                 'url' => $linkToElement == 'nested' ? $element->cpEditUrl : $rootOwner->cpEditUrl,
-                'sort' => self::ELEMENT_TYPE_CONFIG[get_class($element)]['sort'],
+                'sort' => $this->elementTypeConfig[get_class($element)]['sort'],
                 'canView' => $element->canView($this->user)
             ];
         }
@@ -522,7 +537,7 @@ class ElementmapRenderer extends Component
                 'color' => 'var(--black)',
                 'title' => $title,
                 'url' => $rootOwner->cpEditUrl,
-                'sort' => self::ELEMENT_TYPE_CONFIG[get_class($element)]['sort'],
+                'sort' => $this->elementTypeConfig[get_class($element)]['sort'],
                 'canView' => $element->canView($this->user)
             ];
         }
@@ -556,7 +571,7 @@ class ElementmapRenderer extends Component
                 'color' => 'var(--black)',
                 'title' => $title,
                 'url' => $rootOwner->cpEditUrl,
-                'sort' => self::ELEMENT_TYPE_CONFIG[get_class($element)]['sort'],
+                'sort' => $this->elementTypeConfig[get_class($element)]['sort'],
                 'canView' => $element->canView($this->user)
             ];
         }
@@ -587,7 +602,7 @@ class ElementmapRenderer extends Component
                 'color' => 'var(--black)',
                 'title' => $title,
                 'url' => $rootOwner->cpEditUrl,
-                'sort' => self::ELEMENT_TYPE_CONFIG[get_class($element)]['sort'],
+                'sort' => $this->elementTypeConfig[get_class($element)]['sort'],
                 'canView' => $element->canView($this->user)
             ];
         }
@@ -614,7 +629,7 @@ class ElementmapRenderer extends Component
                 'icon' => '@appicons/globe.svg',
                 'title' => $element->name,
                 'url' => $element->cpEditUrl,
-                'sort' => self::ELEMENT_TYPE_CONFIG[get_class($element)]['sort'],
+                'sort' => $this->elementTypeConfig[get_class($element)]['sort'],
                 'canView' => $element->canView($this->user)
             ];
         }
@@ -642,7 +657,7 @@ class ElementmapRenderer extends Component
                 'icon' => '@appicons/folder-open.svg',
                 'title' => $element->title,
                 'url' => $element->cpEditUrl,
-                'sort' => self::ELEMENT_TYPE_CONFIG[get_class($element)]['sort'],
+                'sort' => $this->elementTypeConfig[get_class($element)]['sort'],
                 'canView' => $element->canView($this->user)
             ];
         }
@@ -671,7 +686,7 @@ class ElementmapRenderer extends Component
                 'icon' => '@vendor/craftcms/cms/src/icons/tags.svg',
                 'title' => $element->title,
                 'url' => '/' . Craft::$app->getConfig()->getGeneral()->cpTrigger . '/settings/tags/' . $element->groupId,
-                'sort' => self::ELEMENT_TYPE_CONFIG[get_class($element)]['sort'],
+                'sort' => $this->elementTypeConfig[get_class($element)]['sort'],
                 'canView' => $element->canView($this->user)
             ];
         }
@@ -702,7 +717,7 @@ class ElementmapRenderer extends Component
                 'title' => $element->title . ' (' . $volumeName . ')',
                 'url' => $element->cpEditUrl,
                 'fileUrl' => $element->url,
-                'sort' => self::ELEMENT_TYPE_CONFIG[get_class($element)]['sort'] . $volumeName,
+                'sort' => $this->elementTypeConfig[get_class($element)]['sort'] . $volumeName,
                 'canView' => $element->canView($this->user)
             ];
         }
@@ -728,7 +743,7 @@ class ElementmapRenderer extends Component
                 'icon' => '@appicons/user-vneck.svg',
                 'title' => $element->name,
                 'url' => $element->cpEditUrl,
-                'sort' => self::ELEMENT_TYPE_CONFIG[get_class($element)]['sort'],
+                'sort' => $this->elementTypeConfig[get_class($element)]['sort'],
                 'canView' => $element->canView($this->user)
             ];
         }
@@ -755,7 +770,7 @@ class ElementmapRenderer extends Component
                 'icon' => '@vendor/craftcms/commerce/src/icon-mask.svg',
                 'title' => $element->title . $this->getExtraText($element, $element->type->name),
                 'url' => $element->cpEditUrl,
-                'sort' => self::ELEMENT_TYPE_CONFIG[get_class($element)]['sort'],
+                'sort' => $this->elementTypeConfig[get_class($element)]['sort'],
                 'canView' => $element->canView($this->user)
             ];
         }
@@ -784,7 +799,7 @@ class ElementmapRenderer extends Component
                 'icon' => '@vendor/craftcms/commerce/src/icon-mask.svg',
                 'title' => $product->title . '-> ' . $element->title . ' (' . $product->type->name . ')',
                 'url' => $product->cpEditUrl,
-                'sort' => self::ELEMENT_TYPE_CONFIG[get_class($element)]['sort'],
+                'sort' => $this->elementTypeConfig[get_class($element)]['sort'],
                 'canView' => $element->canView($this->user)
             ];
         }
@@ -805,7 +820,7 @@ class ElementmapRenderer extends Component
                 'icon' => '@appicons/envelope.svg',
                 'title' => $element->title . ' (' . $element->site->name . ', ' . $element->getCampaignType()->name . ')',
                 'url' => $element->cpEditUrl,
-                'sort' => self::ELEMENT_TYPE_CONFIG[get_class($element)]['sort'],
+                'sort' => $this->elementTypeConfig[get_class($element)]['sort'],
                 'canView' => $element->canView($this->user)
             ];
         }
