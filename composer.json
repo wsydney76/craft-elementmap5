@@ -19,7 +19,7 @@
     "handle": "_elementmap",
     "name": "Element Map 5",
     "developer": "wsydney76",
-    "documentationUrl": "",
+    "documentationUrl": "https://github.com/wsydney76/craft-elementmap5",
     "class": "wsydney76\\elementmap\\ElementmapPlugin"
   },
   "scripts": {

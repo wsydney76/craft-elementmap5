@@ -17,7 +17,7 @@ Add to `composer.json` file in your project root to require this plugin:
 ```json
 {
   "require": {
-    "wsydney76/extras": "dev-main"
+    "wsydney76/craft-elementmap5": "dev-main"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
@@ -29,6 +29,10 @@ Add to `composer.json` file in your project root to require this plugin:
   ]
 }
 ```
+
+Run `composer update` to install the plugin.
+
+Then, install the plugin via the Craft CMS Control Panel, or run `php craft plugin/install _elementmap`.
 
 ## Usage
 
