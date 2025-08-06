@@ -4,10 +4,10 @@ namespace wsydney76\elementmap\events;
 
 use craft\base\Event;
 
-class ElementmapDataEvent extends Event
+class ElementmapAddElementsEvent extends Event
 {
-    public $type = null;
-    public $elements = [];
+    public $element = null;
     public $siteId = null;
+    public $direction = null;
     public $data = [];
 }

@@ -4,7 +4,7 @@ namespace wsydney76\elementmap\events;
 
 use yii\base\Event;
 
-class ElementTypeConfigEvent extends Event
+class ElementmapTypeConfigEvent extends Event
 {
     public array $config;
 }

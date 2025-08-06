@@ -32,9 +32,9 @@ use craft\elements\User;
 use Exception;
 use putyourlightson\campaign\elements\CampaignElement;
 use wsydney76\elementmap\ElementmapPlugin;
-use wsydney76\elementmap\events\ElementmapAddEvent;
-use wsydney76\elementmap\events\ElementmapDataEvent;
-use wsydney76\elementmap\events\ElementTypeConfigEvent;
+use wsydney76\elementmap\events\ElementmapAddElementsEvent;
+use wsydney76\elementmap\events\ElementmapAddMapDataEvent;
+use wsydney76\elementmap\events\ElementmapTypeConfigEvent;
 use wsydney76\elementmap\models\Settings;
 use yii\base\Component;
 use function array_merge;
@@ -95,10 +95,10 @@ class ElementmapRenderer extends Component
         ],
     ];
 
-    public const EVENT_ELEMENT_TYPE_CONFIG = 'elementTypeConfig';
+    public const string EVENT_ELEMENTTYPE_CONFIG = 'elementTypeConfig';
 
-    public const EVENT_ELEMENT_MAP_DATA = 'elementmap_data';
-    public const EVENT_ADD_ELEMENTS = 'addElements';
+    public const string EVENT_ADD_MAP_DATA = 'elementmap_data';
+    public const string EVENT_ADD_ELEMENTS = 'addElements';
 
     private Settings $settings;
     private User $user;
@@ -112,11 +112,11 @@ class ElementmapRenderer extends Component
         $this->settings = ElementmapPlugin::getInstance()->getSettings();
 
         // Allow external modification of elementTypeConfig
-        if ($this->hasEventHandlers(static::EVENT_ELEMENT_TYPE_CONFIG)) {
-            $event = new ElementTypeConfigEvent([
+        if ($this->hasEventHandlers(static::EVENT_ELEMENTTYPE_CONFIG)) {
+            $event = new ElementmapTypeConfigEvent([
                 'config' => $this->elementTypeConfig,
             ]);
-            $this->trigger(static::EVENT_ELEMENT_TYPE_CONFIG, $event);
+            $this->trigger(static::EVENT_ELEMENTTYPE_CONFIG, $event);
             if ($event->config) {
                 $this->elementTypeConfig = $event->config;
             }
@@ -176,7 +176,7 @@ class ElementmapRenderer extends Component
         $results = $this->getElementMapData($relationships, $siteId);
 
         if ($this->hasEventHandlers(static::EVENT_ADD_ELEMENTS)) {
-            $event = new ElementmapAddEvent([
+            $event = new ElementmapAddElementsEvent([
                 'element' => $element,
                 'siteId' => $siteId,
                 'direction' => 'incoming',
@@ -214,13 +214,11 @@ class ElementmapRenderer extends Component
         if (Craft::$app->getPlugins()->isPluginEnabled('commerce')) {
             $sources = array_merge($sources, $this->getVariantIdsByProducts($sources));
         }
-
         // Craft 5: get IDs of all nested entries
         $sources = array_merge($sources, $this->getNestedEntryIds($sources));
 
         // Find all elements that have any of these elements as sources.
         $relationships = $this->getRelationships($sources, $siteId, false);
-
         // Outgoing connections may be going to elements such as variants.
         // Before retrieving proper elements and generating the map, their
         // appropriate owner elements should be found.
@@ -228,7 +226,6 @@ class ElementmapRenderer extends Component
 
         // Retrieve the underlying elements from the relationships.
         $results = $this->getElementMapData($relationships, $siteId);
-
         return $this->sortResults($results);
     }
 
@@ -415,13 +412,13 @@ class ElementmapRenderer extends Component
                 /** @noinspection SlowArrayOperationsInLoopInspection */
                 $results = array_merge($results, call_user_func([$this, $this->elementTypeConfig[$type]['get']], $elements[$type], $siteId));
             } else {
-                if ($this->hasEventHandlers(static::EVENT_ELEMENT_MAP_DATA)) {
-                    $event = new ElementmapDataEvent([
+                if ($this->hasEventHandlers(static::EVENT_ADD_MAP_DATA)) {
+                    $event = new ElementmapAddMapDataEvent([
                         'type' => $type,
-                        'elements' => $elements[$type],
+                        'elementIds' => $elements[$type],
                         'siteId' => $siteId,
                     ]);
-                    $this->trigger(static::EVENT_ELEMENT_MAP_DATA, $event);
+                    $this->trigger(static::EVENT_ADD_MAP_DATA, $event);
                     if ($event->data) {
                         $results = array_merge($results, $event->data);
                     }
@@ -785,10 +782,11 @@ class ElementmapRenderer extends Component
      */
     private function getVariantElements($elementIds, $siteId)
     {
-        $criteria = new VariantQuery('craft\commerce\elements\Variant');
-        $criteria->id = $elementIds;
-        $criteria->siteId = $siteId;
-        $elements = $criteria->all();
+
+        $elements = $this->getElementsForType(
+            new VariantQuery('craft\\commerce\\elements\\Variant'),
+            $elementIds,
+            $siteId);
 
 
         $results = [];

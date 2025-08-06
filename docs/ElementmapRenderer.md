@@ -172,8 +172,8 @@ Sorts elements for display using plugin settings:
 
 Developers can hook into these events:
 
-* `EVENT_ELEMENT_TYPE_CONFIG`: Modify which element types are mapped.
-* `EVENT_ELEMENT_MAP_DATA`: Inject custom logic for rendering unsupported types.
+* `EVENT_ELEMENTTYPE_CONFIG`: Modify which element types are mapped.
+* `EVENT_ADD_MAP_DATA`: Inject custom logic for rendering unsupported types.
 * `EVENT_ADD_ELEMENTS`: Add custom elements to the map (used for dynamic mapping).
 
 ---
@@ -234,7 +234,7 @@ To support new element types:
 
 1. Add an entry to `$elementTypeConfig`
 2. Write a handler method like `getMyElementTypeElements()`
-3. (Optional) Trigger `EVENT_ELEMENT_MAP_DATA` for more control
+3. (Optional) Trigger `EVENT_ADD_MAP_DATA` for more control
 
 ---
 
