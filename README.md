@@ -78,3 +78,33 @@ Does not handle relationships for tags.
 
 Enables integration of other element types via events.
 
+## Events
+
+```php
+use verbb\navigation\elements\Node;
+
+Event::on(
+    ElementmapRenderer::class,
+    ElementmapRenderer::EVENT_ADD_ELEMENTS,
+    function(ElementmapAddEvent $event): void {
+
+        if ($event->direction === 'incoming') {
+            $nodes = Node::find()->elementId($event->element->id)->collect();
+            $event->data = $nodes->map(
+                function($node) {
+                    $nav = $node->nav;
+                    $parent = $node->parent;
+                    return [
+                        'id' => $node->id,
+                        'icon' => '@verbb/navigation/icon.svg',
+                        'title' => $nav->name . ' (Navigation' . ($parent ? ' - ' . $parent->title : '') . ')',
+                        'url' => UrlHelper::cpUrl('navigation/navs/build/' . $nav->id),
+                        'sort' => 95,
+                        'canView' => true,
+                    ];
+                }
+            )->toArray();
+        }
+    }
+);
+```
